@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>FNF Mobile Spritesheet Creator</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <main class="app">
+    <header class="app-header">
+      <p class="app-label">FNF SPRITE TOOL</p>
+
+      <h1>FNF Mobile Spritesheet Creator</h1>
+
+      <p class="description">
+        連番PNGを読み込んで、FNF用スプライトシートを作成します。
+      </p>
+    </header>
+
+    <section class="panel">
+  <h2>① アニメーション管理</h2>
+
+  <div class="animation-add-row">
+    <label class="setting-item">
+      <span>新しいアニメーション名</span>
+
+      <input
+        id="animationNameInput"
+        type="text"
+        value="singLEFT"
+        maxlength="40"
+        placeholder="singLEFT"
+      >
+    </label>
+
+    <button
+      id="addAnimationButton"
+      type="button"
+    >
+      ＋ 追加
+    </button>
+  </div>
+
+  <p class="status-text">
+    アニメーションを選択してから、その動きの連番PNGを読み込んでください。
+  </p>
+
+  <div
+    id="animationGroupList"
+    class="animation-group-list"
+  ></div>
+</section>
+
+    <section class="panel">
+      <h2>② 画像を読み込む</h2>
+
+      <p class="active-animation-label">
+  選択中：
+  <strong id="activeAnimationName">
+    idle
+  </strong>
+</p>
+
+      <label class="file-button">
+        PNG画像を選択
+
+        <input
+          id="imageInput"
+          type="file"
+          accept="image/png"
+          multiple
+        >
+      </label>
+
+      <p id="fileCount" class="status-text">
+        画像はまだ選択されていません。
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>③ 出力設定</h2>
+
+      <div class="settings-grid">
+        <label class="setting-item">
+          <span>1行あたりの列数</span>
+
+          <input
+            id="columnInput"
+            type="number"
+            min="1"
+            max="50"
+            value="4"
+          >
+        </label>
+
+        <label class="setting-item">
+          <span>フレーム間隔</span>
+
+          <div class="input-with-unit">
+            <input
+              id="spacingInput"
+              type="number"
+              min="0"
+              max="100"
+              value="2"
+            >
+
+            <span>px</span>
+          </div>
+        </label>
+
+        <label class="setting-item setting-item-wide">
+          <span>保存ファイル名</span>
+
+          <input
+            id="fileNameInput"
+            type="text"
+            value="sprite-sheet"
+            maxlength="80"
+            placeholder="sprite-sheet"
+          >
+        </label>
+
+        <label class="trim-setting setting-item-wide">
+          <input
+            id="trimCheckbox"
+            type="checkbox"
+            checked
+  >
+            <span>
+            透明な余白を自動で削除する
+            </span>
+        </label>
+      </div>
+
+      <div class="size-box">
+        <span>完成予定サイズ</span>
+
+        <strong id="sheetSize">
+          画像を読み込むと表示されます。
+        </strong>
+      </div>
+
+      <p id="sizeWarning" class="warning-text" hidden></p>
+    </section>
+
+    <section class="panel">
+      <h2>④ 読み込んだ画像</h2>
+
+      <div id="previewList" class="preview-list">
+        <p class="empty-message">
+          読み込んだ画像がここに表示されます。
+        </p>
+      </div>
+    </section>
+
+    <section class="panel">
+  <h2>④ アニメーションプレビュー</h2>
+
+  <div class="animation-settings">
+    <label class="setting-item">
+      <span>再生速度</span>
+
+      <div class="input-with-unit">
+        <input
+          id="fpsInput"
+          type="number"
+          min="1"
+          max="60"
+          value="24"
+        >
+
+        <span>FPS</span>
+      </div>
+    </label>
+
+    <label class="preview-loop-setting">
+      <input
+        id="loopCheckbox"
+        type="checkbox"
+        checked
+      >
+
+      <span>ループ再生</span>
+    </label>
+  </div>
+
+  <div class="preview-controls">
+    <button
+      id="previousFrameButton"
+      type="button"
+      class="secondary-button"
+      disabled
+    >
+      ◀ 前
+    </button>
+
+    <button
+      id="playPreviewButton"
+      type="button"
+      disabled
+    >
+      ▶ 再生
+    </button>
+
+    <button
+      id="stopPreviewButton"
+      type="button"
+      class="secondary-button"
+      disabled
+    >
+      ■ 停止
+    </button>
+
+    <button
+      id="nextFrameButton"
+      type="button"
+      class="secondary-button"
+      disabled
+    >
+      次 ▶
+    </button>
+  </div>
+
+  <p
+    id="previewFrameStatus"
+    class="preview-frame-status"
+  >
+    画像を読み込むとプレビューできます。
+  </p>
+
+  <div class="animation-preview-wrapper">
+    <canvas id="animationPreviewCanvas"></canvas>
+
+    <p
+      id="animationPreviewEmpty"
+      class="canvas-empty-message"
+    >
+      アニメーションがここに表示されます。
+    </p>
+  </div>
+</section>
+
+    <section class="panel">
+      <h2>⑥ スプライトシート</h2>
+
+      <div class="button-row">
+        <button
+          id="createSheetButton"
+          type="button"
+          disabled
+        >
+          スプライトシートを作成
+        </button>
+
+        <button
+          id="downloadButton"
+          type="button"
+          class="secondary-button"
+          disabled
+        >
+          PNGを保存
+        </button>
+        <button
+          id="downloadXmlButton"
+          type="button"
+          class="secondary-button"
+          disabled
+>
+          XMLを保存
+        </button>
+      </div>
+
+      <p id="createdSize" class="status-text"></p>
+
+      <div class="canvas-wrapper">
+        <canvas id="spriteCanvas"></canvas>
+
+        <p id="canvasEmptyMessage" class="canvas-empty-message">
+          作成されたスプライトシートがここに表示されます。
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
